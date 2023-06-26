@@ -17,8 +17,7 @@ public class Strings {
 	public static String ipV4() {
 		
 		// four ipV4 octets separated by dot 123.123.255.01
-		String point = "\\.";
-	
+		
 		String octet = "("+ipV4Octet()+")";
 	
 		return "("+octet+"\\."+")"+"{3}"+octet;
