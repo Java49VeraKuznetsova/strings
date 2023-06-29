@@ -129,6 +129,8 @@ class StringsTest {
 		assertFalse(Strings.isArithmeticExpression(" 12/3&4"));
 		assertFalse(Strings.isArithmeticExpression(" 12+20-"));
 		assertFalse(Strings.isArithmeticExpression(" 12/ 18 + 100 10"));
+		assertTrue(Strings.isArithmeticExpression(" 12.0/ 18.12345 + .100 - 10. + 5.4"));
+		assertTrue(Strings.isArithmeticExpression(" 150.5"));
 		
 	}
 	@Test
@@ -137,7 +139,11 @@ class StringsTest {
 		assertEquals(2, Strings.computeExpression(" 12/ 6"));
 		assertEquals(6, Strings.computeExpression("12/2"));
 		assertEquals(1008, Strings.computeExpression(" 12*  2 / 3 + 1000 "));
-		assertEquals(0, Strings.computeExpression(" 120 / 50 + 100 - 2 * 3 / 500 "));
+		//assertEquals(0, Strings.computeExpression(" 120 / 50 + 100 - 2 * 3 / 500 "));
+		assertEquals(1.5, Strings.computeExpression(" 120 / 60 + 100 - 2 * 3 / 200 "));
+		assertEquals(11.6, Strings.computeExpression(" 150.5 / 5 + 29.9-2/5.0"));
+	    assertEquals(4.8, Strings.computeExpression("150.5 / 5 + 29.9 / 12.5"));
+		
 		assertThrowsExactly(IllegalArgumentException.class,
 				() -> Strings.computeExpression(" 12/ 18 + 100 10"));
 	}

@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.function.BinaryOperator;
 
 public class Strings {
-	static HashMap<String, BinaryOperator<Integer>> mapOperations;
+	static HashMap<String, BinaryOperator<Double>> mapOperations;
 	static {
 		mapOperations = new HashMap<>();
 		mapOperations.put("-", (a, b) -> a - b);
@@ -34,29 +34,34 @@ public static String arithmeticExpression() {
 	String operandRE = operand();
 	String operatorRE = operator();
 	return String.format("%1$s(%2$s%1$s)*",operandRE, operatorRE );
+	//return String.format("%s(%s%s)*",operandRE, operatorRE, operandRE );
 }
 public static String operator() {
 	return "\\s*([-+*/])\\s*";
 }
 public static String operand() {
 	//assumption: not unary operators
-	return "(\\d+)";
+	//return "(\\d*[.]?\\d+)";
+	return "((\\d+[.]?\\d*)|([.]\\d+))";
 }
 public static boolean isArithmeticExpression(String expression) {
 	expression = expression.trim();
 	return expression.matches(arithmeticExpression());
 }
-public static int computeExpression(String expression) {
+public static double computeExpression(String expression) {
 	
 	if (!isArithmeticExpression(expression)) {
 		throw new IllegalArgumentException("Wrong arithmetic expression");
 	}
 	expression = expression.replaceAll("\\s+", "");
+	
 	String[] operands = expression.split(operator());
 	String [] operators = expression.split(operand());
-	int res = Integer.parseInt(operands[0]);
+	
+	double res = Double.parseDouble(operands[0]);
+	
 	for(int i = 1; i < operands.length; i++) {
-		int operand = Integer.parseInt(operands[i]);
+		double operand = Double.parseDouble(operands[i]);
 		res = mapOperations.get(operators[i]).apply(res, operand);
 	}
 	
