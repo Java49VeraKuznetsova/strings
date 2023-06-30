@@ -1,6 +1,7 @@
 package telran.text;
 
 import java.util.HashMap;
+import java.util.NoSuchElementException;
 import java.util.function.BinaryOperator;
 
 public class Strings {
@@ -34,16 +35,22 @@ public static String arithmeticExpression() {
 	String operandRE = operand();
 	String operatorRE = operator();
 	return String.format("%1$s(%2$s%1$s)*",operandRE, operatorRE );
-	//return String.format("%s(%s%s)*",operandRE, operatorRE, operandRE );
+	
 }
 public static String operator() {
 	return "\\s*([-+*/])\\s*";
 }
-public static String operand() {
+
+public static String operandNumber() {
 	//assumption: not unary operators
 	//return "(\\d*[.]?\\d+)";
 	return "((\\d+[.]?\\d*)|([.]\\d+))";
 }
+
+public static String operand() {
+	return "("+operandNumber()+"|"+ javaVariableName()+")";
+}
+
 public static boolean isArithmeticExpression(String expression) {
 	expression = expression.trim();
 	return expression.matches(arithmeticExpression());
@@ -72,7 +79,40 @@ public static double computeExpression(String expression) {
 public static double computeExpression(String expression,
 		HashMap<String, Double> mapVariables) {
 	//TODO
-	return 0;
+	if (!isArithmeticExpression(expression)) {
+		throw new IllegalArgumentException("Wrong arithmetic expression");
+	}
+expression = expression.replaceAll("\\s+", "");
+	
+	String[] operands = expression.split(operator());
+	String [] operators = expression.split(operand());
+	double res;
+	Double valueVariable;
+	if (operands[0].matches(operandNumber())) {
+		res = Double.parseDouble(operands[0]);
+	} else {
+		valueVariable = mapVariables.get(operands[0]);
+		if (valueVariable == null){
+			throw new NoSuchElementException("No such value");
+		}
+		res = valueVariable;
+	}
+	for(int i = 1; i < operands.length; i++) {
+		double operand;
+		if (operands[i].matches(operandNumber())) {
+			operand = Double.parseDouble(operands[i]);
+		} else {
+			valueVariable = mapVariables.get(operands[i]);
+			if (valueVariable == null){
+				throw new NoSuchElementException("No such value");
+			}
+			operand = valueVariable;
+		}
+		
+		res = mapOperations.get(operators[i]).apply(res, operand);
+	}
+	return res;
 }
+
 
 }

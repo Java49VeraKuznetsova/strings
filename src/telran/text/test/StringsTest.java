@@ -2,6 +2,10 @@ package telran.text.test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.HashMap;
+import java.util.NoSuchElementException;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import telran.text.Strings;
@@ -129,8 +133,21 @@ class StringsTest {
 		assertFalse(Strings.isArithmeticExpression(" 12/3&4"));
 		assertFalse(Strings.isArithmeticExpression(" 12+20-"));
 		assertFalse(Strings.isArithmeticExpression(" 12/ 18 + 100 10"));
+		
 		assertTrue(Strings.isArithmeticExpression(" 12.0/ 18.12345 + .100 - 10. + 5.4"));
 		assertTrue(Strings.isArithmeticExpression(" 150.5"));
+		assertFalse(Strings.isArithmeticExpression(" .150.5"));
+		assertFalse(Strings.isArithmeticExpression("+ 0.150.5"));
+		
+		assertTrue(Strings.isArithmeticExpression(" 150.5 + a_b "));
+		assertTrue(Strings.isArithmeticExpression(" 18.12345 + $23 "));
+		assertTrue(Strings.isArithmeticExpression(" 0.436 + a$23 "));
+		assertTrue(Strings.isArithmeticExpression("a_b + 150.5"));
+		assertTrue(Strings.isArithmeticExpression("a_b + 150.5"));
+		assertFalse(Strings.isArithmeticExpression("a# / 150.5"));
+		assertTrue(Strings.isArithmeticExpression(" 150.5 + lmn "));
+	
+		
 		
 	}
 	@Test
@@ -146,5 +163,27 @@ class StringsTest {
 		
 		assertThrowsExactly(IllegalArgumentException.class,
 				() -> Strings.computeExpression(" 12/ 18 + 100 10"));
+	}
+	
+	
+	@Test
+	void computeExpressionTest2() {
+		String[] keys = {"lmn", "abc", "ab", "a"};
+		Double[] values = {3.0, 0.2, 2.25, 1.};
+	
+		
+		 HashMap <String, Double> mapVariables = new HashMap();
+		 for (int i = 0; i<keys.length; i++) {
+				mapVariables.put(keys[i], values[i]);
+				
+			}
+			assertThrowsExactly(NoSuchElementException.class,
+					() -> Strings.computeExpression(" 150.5 + a_b ", mapVariables));
+		
+		assertEquals(153.5, Strings.computeExpression(" 150.5 + lmn ", mapVariables));
+		assertEquals(153.5, Strings.computeExpression(" 150.5 + lmn ", mapVariables));
+		assertEquals(20, Strings.computeExpression(" abc / 0.01 ", mapVariables));
+		assertEquals(23.4375, Strings.computeExpression(" 150.5 + ab - 1.75 - a / 6.4  ", mapVariables));
+		
 	}
 }
