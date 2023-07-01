@@ -179,6 +179,8 @@ class StringsTest {
 			}
 			assertThrowsExactly(NoSuchElementException.class,
 					() -> Strings.computeExpression(" 150.5 + a_b ", mapVariables));
+			assertThrowsExactly(IllegalArgumentException.class,
+					() -> Strings.computeExpression(" 12/ 18 + 100 - a#10"));
 		
 		assertEquals(153.5, Strings.computeExpression(" 150.5 + lmn ", mapVariables));
 		assertEquals(153.5, Strings.computeExpression(" 150.5 + lmn ", mapVariables));

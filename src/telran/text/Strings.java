@@ -23,7 +23,7 @@ public static String zero_300() {
 	return "[1-9]\\d?|[1-2]\\d\\d|300|0";
 }
 public static String ipV4Octet() {
-	//TODO
+	//
 	//positive number from 0 to 255 and leading zeros are allowed
 	return  "([01]?\\d\\d?|2([0-4]\\d|5[0-5]))";
 }
@@ -78,7 +78,7 @@ public static double computeExpression(String expression) {
 //Update code taking into consideration possible variable names
 public static double computeExpression(String expression,
 		HashMap<String, Double> mapVariables) {
-	//TODO
+	//
 	if (!isArithmeticExpression(expression)) {
 		throw new IllegalArgumentException("Wrong arithmetic expression");
 	}
@@ -86,33 +86,31 @@ expression = expression.replaceAll("\\s+", "");
 	
 	String[] operands = expression.split(operator());
 	String [] operators = expression.split(operand());
-	double res;
-	Double valueVariable;
-	if (operands[0].matches(operandNumber())) {
-		res = Double.parseDouble(operands[0]);
-	} else {
-		valueVariable = mapVariables.get(operands[0]);
-		if (valueVariable == null){
-			throw new NoSuchElementException("No such value");
-		}
-		res = valueVariable;
-	}
+	
+	
+	double res = getOperandValue(operands[0], mapVariables);
+
 	for(int i = 1; i < operands.length; i++) {
-		double operand;
-		if (operands[i].matches(operandNumber())) {
-			operand = Double.parseDouble(operands[i]);
-		} else {
-			valueVariable = mapVariables.get(operands[i]);
-			if (valueVariable == null){
-				throw new NoSuchElementException("No such value");
-			}
-			operand = valueVariable;
-		}
-		
+		double operand = getOperandValue(operands[i], mapVariables);
+	
 		res = mapOperations.get(operators[i]).apply(res, operand);
 	}
 	return res;
 }
 
+private static Double getOperandValue (String operand, HashMap<String, Double> mapVariables) {
+	Double valueVariable;
 
+	if (operand.matches(operandNumber())) {
+		valueVariable = Double.parseDouble(operand);
+	} else {
+		valueVariable = mapVariables.get(operand);
+		if 	 (valueVariable == null){
+			throw new NoSuchElementException("No such value" + operand);
+		}
+	}
+	return valueVariable;
+	
+
+}
 }
