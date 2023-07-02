@@ -48,7 +48,8 @@ public static String operandNumber() {
 }
 
 public static String operand() {
-	return "("+operandNumber()+"|"+ javaVariableName()+")";
+	//return "("+operandNumber()+"|"+ javaVariableName()+")";
+	return String.format("((%s|%s))", operandNumber(), javaVariableName());
 }
 
 public static boolean isArithmeticExpression(String expression) {
